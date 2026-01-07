@@ -1,0 +1,24 @@
+{
+  "name": "erc-20-funding-system",
+  "version": "1.0.0",
+  "description": "ERC-20 Token Crowdfunding System with Sponsorship and Distribution",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.ts"
+  },
+  "keywords": ["solidity", "erc20", "crowdfunding", "hardhat"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.6",
+    "hardhat": "^2.19.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
+
