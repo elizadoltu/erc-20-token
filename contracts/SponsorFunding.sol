@@ -11,10 +11,6 @@ interface IFundingToken {
     function buyTokens() external payable;
 }
 
-/**
- * @title SponsorFunding
- * @dev Manages sponsorship for crowdfunding campaigns with percentage-based contributions
- */
 contract SponsorFunding {
     uint256 public sponsorPercentage; // Percentage to sponsor (e.g., 10 for 10%)
     address public owner;
@@ -30,11 +26,6 @@ contract SponsorFunding {
         _;
     }
     
-    /**
-     * @dev Constructor
-     * @param _sponsorPercentage Percentage of crowdfunding amount to sponsor
-     * @param _tokenContract Address of the token contract
-     */
     constructor(uint256 _sponsorPercentage, address _tokenContract) {
         require(_sponsorPercentage > 0 && _sponsorPercentage <= 100, "Invalid percentage");
         require(_tokenContract != address(0), "Invalid token contract address");
@@ -44,10 +35,7 @@ contract SponsorFunding {
         tokenContract = IERC20(_tokenContract);
         fundingTokenContract = IFundingToken(_tokenContract);
     }
-    
-    /**
-     * @dev Allows owner to purchase tokens for sponsorship by sending ETH
-     */
+ 
     function buyTokensForSponsorship() public payable onlyOwner {
         require(msg.value > 0, "Must send ETH to buy tokens");
         
@@ -62,11 +50,6 @@ contract SponsorFunding {
         emit TokensPurchased(tokensPurchased, msg.value);
     }
     
-    /**
-     * @dev Provides sponsorship to a crowdfunding campaign
-     * @param crowdfundingAddress Address of the CrowdFunding contract
-     * @return success True if sponsorship was provided, false otherwise
-     */
     function sponsorCrowdfunding(address crowdfundingAddress) external returns (bool) {
         require(crowdfundingAddress != address(0), "Invalid crowdfunding address");
         
@@ -95,17 +78,11 @@ contract SponsorFunding {
         emit SponsorshipProvided(crowdfundingAddress, sponsorAmount);
         return true;
     }
-    
-    /**
-     * @dev Returns the available token balance for sponsorship
-     */
+
     function getAvailableBalance() public view returns (uint256) {
         return tokenContract.balanceOf(address(this));
     }
     
-    /**
-     * @dev Allows owner to withdraw tokens (in case of excess)
-     */
     function withdrawTokens(uint256 amount) public onlyOwner {
         require(amount > 0, "Amount must be greater than 0");
         require(
@@ -119,9 +96,6 @@ contract SponsorFunding {
         );
     }
     
-    /**
-     * @dev Allows the contract to receive ETH
-     */
     receive() external payable {
         require(msg.sender == owner, "Only owner can send ETH");
     }

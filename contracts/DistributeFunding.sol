@@ -6,10 +6,6 @@ interface IERC20 {
     function balanceOf(address account) external view returns (uint256);
 }
 
-/**
- * @title DistributeFunding
- * @dev Manages distribution of funds to shareholders based on their percentage
- */
 contract DistributeFunding {
     struct Shareholder {
         address addr;
@@ -44,11 +40,7 @@ contract DistributeFunding {
         require(fundsReceived, "Funds not yet received");
         _;
     }
-    
-    /**
-     * @dev Constructor
-     * @param _tokenContract Address of the token contract
-     */
+
     constructor(address _tokenContract) {
         require(_tokenContract != address(0), "Invalid token contract address");
         
@@ -57,12 +49,7 @@ contract DistributeFunding {
         fundsReceived = false;
         totalReceived = 0;
     }
-    
-    /**
-     * @dev Adds a shareholder with their percentage share
-     * @param addr Address of the shareholder
-     * @param percentage Percentage share (0-100)
-     */
+  
     function addShareholder(address addr, uint256 percentage) public onlyOwner beforeFundsReceived {
         require(addr != address(0), "Invalid shareholder address");
         require(percentage > 0 && percentage <= 100, "Invalid percentage");
@@ -83,10 +70,6 @@ contract DistributeFunding {
         emit ShareholderAdded(addr, percentage);
     }
     
-    /**
-     * @dev Receives funds from CrowdFunding contract
-     * This function is called when funds are transferred to this contract
-     */
     function receiveFunds(uint256 amount) public onlyOwner {
         require(amount > 0, "Amount must be greater than 0");
         require(!fundsReceived, "Funds already received");
@@ -100,10 +83,7 @@ contract DistributeFunding {
         
         emit FundsReceived(amount);
     }
-    
-    /**
-     * @dev Allows a shareholder to withdraw their share
-     */
+ 
     function withdrawShare() public afterFundsReceived {
         require(shareholders[msg.sender].exists, "Not a shareholder");
         require(!shareholders[msg.sender].withdrawn, "Share already withdrawn");
@@ -124,10 +104,7 @@ contract DistributeFunding {
         
         emit ShareWithdrawn(msg.sender, shareAmount);
     }
-    
-    /**
-     * @dev Returns shareholder information
-     */
+
     function getShareholderInfo(address addr) public view returns (
         uint256 percentage,
         bool withdrawn,
@@ -137,9 +114,6 @@ contract DistributeFunding {
         return (shareholder.percentage, shareholder.withdrawn, shareholder.exists);
     }
     
-    /**
-     * @dev Returns the total percentage allocated to all shareholders
-     */
     function getTotalPercentage() public view returns (uint256) {
         uint256 total = 0;
         for (uint256 i = 0; i < shareholderAddresses.length; i++) {
@@ -147,25 +121,16 @@ contract DistributeFunding {
         }
         return total;
     }
-    
-    /**
-     * @dev Returns the number of shareholders
-     */
+  
     function getShareholderCount() public view returns (uint256) {
         return shareholderAddresses.length;
     }
     
-    /**
-     * @dev Returns shareholder address at index
-     */
     function getShareholderAddress(uint256 index) public view returns (address) {
         require(index < shareholderAddresses.length, "Index out of bounds");
         return shareholderAddresses[index];
     }
-    
-    /**
-     * @dev Calculates the share amount for a given shareholder
-     */
+   
     function calculateShare(address addr) public view returns (uint256) {
         require(shareholders[addr].exists, "Not a shareholder");
         if (!fundsReceived) {

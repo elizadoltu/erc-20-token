@@ -11,10 +11,6 @@ interface ISponsorFunding {
     function sponsorCrowdfunding(address crowdfundingAddress) external returns (bool);
 }
 
-/**
- * @title CrowdFunding
- * @dev Manages crowdfunding campaign with three states: NEFINANTAT, PREFINANTAT, FINANTAT
- */
 contract CrowdFunding {
     enum State { NEFINANTAT, PREFINANTAT, FINANTAT }
     
@@ -46,14 +42,7 @@ contract CrowdFunding {
         require(currentState == _state, "Invalid state for this operation");
         _;
     }
-    
-    /**
-     * @dev Constructor
-     * @param _fundingGoal Target amount to raise in token units
-     * @param _tokenContract Address of the ERC-20 token contract
-     * @param _sponsorContract Address of the SponsorFunding contract
-     * @param _distributionContract Address of the DistributeFunding contract
-     */
+
     constructor(
         uint256 _fundingGoal,
         address _tokenContract,
@@ -72,11 +61,7 @@ contract CrowdFunding {
         distributionContract = _distributionContract;
         currentState = State.NEFINANTAT;
     }
-    
-    /**
-     * @dev Allows contributors to deposit tokens
-     * @param amount Amount of tokens to deposit
-     */
+   
     function deposit(uint256 amount) public inState(State.NEFINANTAT) {
         require(amount > 0, "Amount must be greater than 0");
         
@@ -98,11 +83,7 @@ contract CrowdFunding {
             emit StateChanged(State.PREFINANTAT);
         }
     }
-    
-    /**
-     * @dev Allows contributors to withdraw their contributions
-     * @param amount Amount to withdraw (0 means withdraw all)
-     */
+  
     function withdraw(uint256 amount) public inState(State.NEFINANTAT) {
         require(contributions[msg.sender] > 0, "No contributions to withdraw");
         
@@ -124,9 +105,6 @@ contract CrowdFunding {
         emit Withdrawal(msg.sender, withdrawAmount);
     }
     
-    /**
-     * @dev Owner requests sponsorship from SponsorFunding contract
-     */
     function requestSponsorship() public onlyOwner inState(State.PREFINANTAT) {
         emit SponsorshipRequested();
         
@@ -149,10 +127,7 @@ contract CrowdFunding {
         currentState = State.FINANTAT;
         emit StateChanged(State.FINANTAT);
     }
-    
-    /**
-     * @dev Owner transfers funds to DistributeFunding contract
-     */
+   
     function transferToDistribution() public onlyOwner inState(State.FINANTAT) {
         require(totalRaised > 0, "No funds to transfer");
         
@@ -165,10 +140,7 @@ contract CrowdFunding {
         
         emit FundsTransferredToDistribution(amount);
     }
-    
-    /**
-     * @dev Returns the current state as a string
-     */
+
     function getState() public view returns (string memory) {
         if (currentState == State.NEFINANTAT) {
             return "nefinantat";
@@ -179,16 +151,10 @@ contract CrowdFunding {
         }
     }
     
-    /**
-     * @dev Returns the contribution balance of a contributor
-     */
     function getContributorBalance(address contributor) public view returns (uint256) {
         return contributions[contributor];
     }
     
-    /**
-     * @dev Returns the current token balance of the contract
-     */
     function getBalance() public view returns (uint256) {
         return tokenContract.balanceOf(address(this));
     }
