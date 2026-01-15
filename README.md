@@ -252,7 +252,3 @@ erc-20-token/
 ├── package.json
 └── README.md
 ```
-
-## Contributing
-
-This project was developed as part of a Solidity blockchain course. Feel free to use it as a reference or starting point for similar crowdfunding systems.
