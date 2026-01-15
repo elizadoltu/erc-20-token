@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS } from '@utils/constants';
-import { CampaignAddress } from '@contracts/addresses';
+import { CampaignAddress, CONTRACTS } from '@contracts/addresses';
 
 /**
  * Hook to manage multiple campaign addresses
@@ -15,10 +15,20 @@ export const useCampaigns = () => {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
+        // Always ensure the default deployed campaign is included
+        const defaultCampaign = CONTRACTS.CROWD_FUNDING;
+        if (!parsed.includes(defaultCampaign)) {
+          parsed.unshift(defaultCampaign);
+        }
         setCampaigns(parsed);
       } catch (error) {
         console.error('Error loading campaigns from storage:', error);
+        // If parsing fails, at least add the default campaign
+        setCampaigns([CONTRACTS.CROWD_FUNDING]);
       }
+    } else {
+      // First time load - add the default deployed campaign
+      setCampaigns([CONTRACTS.CROWD_FUNDING]);
     }
   }, []);
 
